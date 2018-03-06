@@ -102,6 +102,10 @@ variable "log_retention" {
   default = 168
 }
 
+variable "subnet_ips" {
+  type = "list"
+  description = "a list of the subnet cidrs - used to get around a limitation of counting resources not yet created"
+}
 variable "subnet_ids" {
   type = "list"
   description = "list of subnet IDs"
@@ -145,6 +149,11 @@ variable "bastion_user" {
 variable "bastion_private_key" {
   type = "string"
   description = "local path to ssh private key for bastion access"
+}
+
+variable "enable_couldwatch" {
+  default = false
+  description = "set to 1 to activate cloudwatch"
 }
 
 variable "cloudwatch_alarm_arn" {

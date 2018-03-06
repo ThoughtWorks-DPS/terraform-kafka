@@ -3,7 +3,7 @@
  */
 
 resource "aws_cloudwatch_metric_alarm" "zookeeper-cpu-alarm" {
-  count = "${aws_instance.zookeeper-server.count}"
+  count = "${aws_instance.zookeeper-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-zk-cpu-%02d", var.environment, count.index+1)}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = "5"
@@ -19,7 +19,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-cpu-alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-cpu-alarm" {
-  count = "${aws_instance.kafka-server.count}"
+  count = "${aws_instance.kafka-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-kafka-cpu-%s-%02d", var.environment, element(data.aws_subnet.subnet.*.availability_zone, count.index), (count.index/data.aws_subnet.subnet.count)+1)}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = "5"
@@ -35,7 +35,7 @@ resource "aws_cloudwatch_metric_alarm" "kafka-cpu-alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "zookeeper-status-alarm" {
-  count = "${aws_instance.zookeeper-server.count}"
+  count = "${aws_instance.zookeeper-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-zk-status-%02d", var.environment, count.index+1)}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = "1"
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-status-alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-status-alarm" {
-  count = "${aws_instance.kafka-server.count}"
+  count = "${aws_instance.kafka-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-kafka-status-%s-%02d", var.environment, element(data.aws_subnet.subnet.*.availability_zone, count.index), (count.index/data.aws_subnet.subnet.count)+1)}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = "1"
@@ -67,7 +67,7 @@ resource "aws_cloudwatch_metric_alarm" "kafka-status-alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "zookeeper-proc-alarm" {
-  count = "${aws_instance.zookeeper-server.count}"
+  count = "${aws_instance.zookeeper-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-zk-proc-%02d", var.environment, count.index+1)}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods = "1"
@@ -83,7 +83,7 @@ resource "aws_cloudwatch_metric_alarm" "zookeeper-proc-alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "kafka-proc-alarm" {
-  count = "${aws_instance.kafka-server.count}"
+  count = "${aws_instance.kafka-server.count * var.enable_couldwatch}"
   alarm_name = "${format("%s-kafka-proc-%s-%02d", var.environment, element(data.aws_subnet.subnet.*.availability_zone, count.index), (count.index/data.aws_subnet.subnet.count)+1)}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods = "1"
@@ -99,24 +99,28 @@ resource "aws_cloudwatch_metric_alarm" "kafka-proc-alarm" {
 }
 
 resource "aws_cloudwatch_event_rule" "zookeeper-event-rule" {
+  count = "${var.enable_couldwatch}"
   name = "${var.environment}-zk-event"
   description = "Zookeeper State Change"
   event_pattern = "${data.template_file.zookeeper-state-change.rendered}"
 }
 
 resource "aws_cloudwatch_event_target" "zookeeper-event-target" {
+  count = "${var.enable_couldwatch}"
   target_id = "zookeeper"
   rule = "${aws_cloudwatch_event_rule.zookeeper-event-rule.name}"
   arn = "${var.cloudwatch_alarm_arn}"
 }
 
 resource "aws_cloudwatch_event_rule" "kafka-event-rule" {
+  count = "${var.enable_couldwatch}"
   name = "${var.environment}-kafka-event"
   description = "Kafka State Change"
   event_pattern = "${data.template_file.kafka-state-change.rendered}"
 }
 
 resource "aws_cloudwatch_event_target" "kafka-event-target" {
+  count = "${var.enable_couldwatch}"
   target_id = "kafka"
   rule = "${aws_cloudwatch_event_rule.kafka-event-rule.name}"
   arn = "${var.cloudwatch_alarm_arn}"
