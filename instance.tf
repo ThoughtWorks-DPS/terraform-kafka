@@ -11,7 +11,7 @@ resource "aws_instance" "zookeeper-server" {
   private_ip = "${cidrhost(element(data.aws_subnet.static-subnet.*.cidr_block, count.index), var.zookeeper_addr)}"
   iam_instance_profile = "${var.iam_instance_profile}"
   key_name = "${var.key_name}"
-  tags   = "${merge(var.common_tags, map("Name",format("${var.environment}-${var.app_name}-zk-${format("%02d", count.index+1)}"))}"
+  tags   = "${merge(var.common_tags, map("Name",format("%s-%s-zk-"%02d",var.environment, var.app_name, count.index+1)))}"
 
   lifecycle {
     create_before_destroy = true
@@ -27,5 +27,5 @@ resource "aws_instance" "kafka-server" {
   iam_instance_profile = "${var.iam_instance_profile}"
   key_name = "${var.key_name}"
   user_data = "${data.template_file.mount-volumes.rendered}"
-  tags   = "${merge(var.common_tags, map(Name","${var.environment}-${var.app_name}-kafka-${format("%02d", count.index+1)}"))}"
+  tags   = "${merge(var.common_tags, map("Name",format("%s-%s-kafka-"%02d",var.environment, var.app_name, count.index+1)))}"
 }
