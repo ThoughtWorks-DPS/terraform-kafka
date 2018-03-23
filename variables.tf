@@ -165,10 +165,6 @@ variable "ebs_encrypted" {
   type = "string"
 }
 
-variable "kms_key_id" {
-  default = ""
-}
-
 variable "common_tags" {
   type = "map"
 }
