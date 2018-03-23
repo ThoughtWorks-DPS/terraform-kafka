@@ -160,3 +160,15 @@ variable "cloudwatch_alarm_arn" {
   type = "string"
   description = "cloudwatch alarm ARN"
 }
+
+variable "ebs_encrypted" {
+  type = "string"
+}
+
+variable "kms_key_id" {
+  default = ""
+}
+
+variable "common_tags" {
+  type = "map"
+}
